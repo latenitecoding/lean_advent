@@ -13,7 +13,6 @@ def printSolutions (solutions : List String) : IO UInt32 := do
     printSolutions solutions
 
 def main (args : List String) : IO UInt32 := do
-  printSolutions (
-    match args with
+  let solutions ← match args with
     | _ => selectAllChallenges
-  )
+  printSolutions solutions

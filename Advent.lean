@@ -1,18 +1,17 @@
 import Advent.Advent2022
 
-def selectChallenge (year day : Nat) : Option String := do
-  let solution := match year with
+def selectChallenge (year day : Nat) : IO (Option String) := do
+  let solution ← match year with
   | 2022 => Advent2022.selectDay day
-  | _ => none
+  | _ => pure none
   match solution with
-  | some result => match result () with
-    | EStateM.Result.ok ⟨part1, part2⟩ _ => some s!"year: {year}, day: {day} => ({part1}, {part2})"
-    | EStateM.Result.error err _ => some s!"year: {year}, day: {day} => {err}"
-  | none => none
+  | some ⟨part1, part2⟩ => pure (some s!"year: {year}, day: {day} => ({part1}, {part2})")
+  | none => pure none
 
-def selectAllChallengesFromYear (year : Nat) : List String :=
-  match selectChallenge year 1 with
-  | some solution => solution :: []
-  | none => []
+def selectAllChallengesFromYear (year : Nat) : IO (List String) := do
+  match ←(selectChallenge year 1) with
+  | some solution => pure (solution :: [])
+  | none => pure []
 
-def selectAllChallenges : List String := selectAllChallengesFromYear 2022
+def selectAllChallenges : IO (List String) := do
+  selectAllChallengesFromYear 2022
