@@ -1,17 +1,32 @@
 import Advent.Advent2022
 
-def selectChallenge (year day : Nat) : IO (Option String) := do
-  let solution ← match year with
+def Advent.selectChallenge (year day : Nat) : IO (Option (String × String)) :=
+  match year with
   | 2022 => Advent2022.selectDay day
   | _ => pure none
-  match solution with
-  | some ⟨part1, part2⟩ => pure (some s!"year: {year}, day: {day} => ({part1}, {part2})")
-  | none => pure none
 
-def selectAllChallengesFromYear (year : Nat) : IO (List String) := do
-  match ←(selectChallenge year 1) with
-  | some solution => pure (solution :: [])
-  | none => pure []
+def Advent.selectAllChallengesFromYear (year : Nat) : IO (List (Nat × String × String)) :=
+  Std.Range.mk 1 26 1
+    |>.forIn [] (fun day solutions => do
+        match day with
+        | _ => match ←(selectChallenge year day) with 
+          | some (part1, part2) => pure $ ForInStep.yield $ (day, part1, part2) :: solutions
+          | none => pure $ ForInStep.yield solutions
+      )
 
-def selectAllChallenges : IO (List String) := do
-  selectAllChallengesFromYear 2022
+def Advent.selectAllChallengesWithDay (day : Nat) : IO (List (Nat × String × String)) :=
+  Std.Range.mk 2015 2023 1
+    |>.forIn [] (fun year solutions => do
+        match day with
+        | _ => match ←(selectChallenge year day) with 
+          | some (part1, part2) => pure $ ForInStep.yield $ (year, part1, part2) :: solutions
+          | none => pure $ ForInStep.yield solutions
+      )
+
+def Advent.selectAllChallenges : IO (List (Nat × Nat × String × String)) := do
+  Std.Range.mk 2015 2023 1
+    |>.forIn [] (fun year solutions => do
+        match year with
+        | _ => match ←(selectAllChallengesFromYear year) with
+          | solves => pure $ ForInStep.yield $ (solves.map (fun t => (year, t))) ++ solutions
+      )

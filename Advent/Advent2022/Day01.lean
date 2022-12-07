@@ -41,7 +41,7 @@ def Day01.part2 (input : String) : String :=
     |>.foldl (fun a b : Nat => a + b) 0
     |>.repr
 
-def Day01.solve (input : String) : String × String := ⟨Day01.part1 input, Day01.part2 input⟩
+def Day01.solve (input : String) : String × String := (Day01.part1 input, Day01.part2 input)
 
 #eval Day01.part1 "1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000"
 
